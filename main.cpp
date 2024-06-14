@@ -191,6 +191,30 @@ int main()
             }
 
             ImGui::Image((void *)(intptr_t)my_image_texture, image_size);
+
+            if (ImGui::IsItemHovered() && !currentImage.empty())
+            {
+                ImVec2 mouse_pos = ImGui::GetMousePos();
+                ImVec2 image_pos = ImGui::GetItemRectMin();
+                ImVec2 mouse_pos_in_image = ImVec2(mouse_pos.x - image_pos.x, mouse_pos.y - image_pos.y);
+                mouse_pos_in_image.x /= image_size.x;
+                mouse_pos_in_image.y /= image_size.y;
+
+                int pixel_x = static_cast<int>(mouse_pos_in_image.x * width);
+                int pixel_y = static_cast<int>(mouse_pos_in_image.y * height);
+
+                if (pixel_x >= 0 && pixel_x < width && pixel_y >= 0 && pixel_y < height)
+                {
+                    unsigned char r = currentImage[(pixel_y * width + pixel_x) * 3 + 0];
+                    unsigned char g = currentImage[(pixel_y * width + pixel_x) * 3 + 1];
+                    unsigned char b = currentImage[(pixel_y * width + pixel_x) * 3 + 2];
+
+                    ImGui::BeginTooltip();
+                    ImGui::Text("Pixel: (%d, %d)", pixel_x, pixel_y);
+                    ImGui::Text("Color: (%d, %d, %d)", r, g, b);
+                    ImGui::EndTooltip();
+                }
+            }
             ImGui::End();
         }
 
