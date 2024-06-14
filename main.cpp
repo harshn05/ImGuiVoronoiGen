@@ -7,10 +7,15 @@
 #include <cmath>
 #include <limits>
 #include <omp.h>
+#include <string>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "tinyfiledialogs.h"
+
+std::vector<unsigned char> currentImage;
+std::string savePath;
 
 struct Point
 {
@@ -18,8 +23,7 @@ struct Point
     unsigned char r, g, b;
 };
 
-
-GLuint LoadTextureFromMemory(const std::vector<unsigned char>& img, int width, int height)
+GLuint LoadTextureFromMemory(const std::vector<unsigned char> &img, int width, int height)
 {
     GLuint texture;
     glGenTextures(1, &texture);
@@ -32,14 +36,13 @@ GLuint LoadTextureFromMemory(const std::vector<unsigned char>& img, int width, i
     return texture;
 }
 
-
-GLuint LoadTextureFromFile(const char* filename, int& width, int& height)
+GLuint LoadTextureFromFile(const char *filename, int &width, int &height)
 {
     GLuint texture;
     glGenTextures(1, &texture);
 
     int n;
-    unsigned char* data = stbi_load(filename, &width, &height, &n, 0);
+    unsigned char *data = stbi_load(filename, &width, &height, &n, 0);
     if (data)
     {
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -96,13 +99,14 @@ int main()
 {
     // Setup window
     glfwInit();
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGuiVoronoiGen", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(1280, 720, "ImGuiVoronoiGen", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
     // Setup ImGui context
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
 
     // Setup ImGui style
     ImGui::StyleColorsDark();
@@ -138,14 +142,40 @@ int main()
 
             if (ImGui::Button("Generate"))
             {
-                std::vector<unsigned char> img = generateVoronoiDiagram(width, height, numPoints, seed);
-                //stbi_write_png("voronoi.png", width, height, 3, img.data(), width * 3);
-                //my_image_texture = LoadTextureFromFile("voronoi.png", width, height);
-                my_image_texture = LoadTextureFromMemory(img, width, height);
+                // std::vector<unsigned char> img = generateVoronoiDiagram(width, height, numPoints, seed);
+                // stbi_write_png("voronoi.png", width, height, 3, img.data(), width * 3);
+                // my_image_texture = LoadTextureFromFile("voronoi.png", width, height);
+                // my_image_texture = LoadTextureFromMemory(img, width, height);
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed);
+                my_image_texture = LoadTextureFromMemory(currentImage, width, height);
+            }
+
+            if (ImGui::Button("Save"))
+            {
+                const char *filterPatterns[1] = {"*.png"};
+                const char *filePath = tinyfd_saveFileDialog("Save Image", "", 1, filterPatterns, NULL);
+                if (filePath != NULL)
+                {
+                    savePath = filePath;
+                    stbi_write_png(savePath.c_str(), width, height, 3, currentImage.data(), width * 3);
+                }
+            }
+
+            if (ImGui::BeginPopupModal("Save Image", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Enter the path where you want to save the image:");
+                ImGui::InputTextWithHint("", "Path", &savePath[0], savePath.size() + 1);
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                {
+                    stbi_write_png(savePath.c_str(), width, height, 3, currentImage.data(), width * 3);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
             }
 
             ImVec2 available = ImGui::GetContentRegionAvail();
-             float window_aspect = available.x / available.y;
+            float window_aspect = available.x / available.y;
             float image_aspect = (float)width / (float)height;
 
             ImVec2 image_size;
@@ -160,7 +190,7 @@ int main()
                 image_size.y = available.x / image_aspect;
             }
 
-            ImGui::Image((void*)(intptr_t)my_image_texture, image_size);
+            ImGui::Image((void *)(intptr_t)my_image_texture, image_size);
             ImGui::End();
         }
 

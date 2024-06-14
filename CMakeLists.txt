@@ -80,9 +80,11 @@ set(IMGUI_BACKEND_SRC
 add_library(imgui ${IMGUI_SRC} ${IMGUI_BACKEND_SRC})
 add_dependencies(imgui GLFW_LIB)
 
-add_executable(ImGuiVoronoiGen main.cpp)
+add_library(tinyfiledialogs tinyfiledialogs.h tinyfiledialogs.c)
+
+add_executable(ImGuiVoronoiGen tinyfiledialogs.c main.cpp)
 add_dependencies(ImGuiVoronoiGen GLFW_LIB)
 
-target_link_libraries(ImGuiVoronoiGen ${OPENGL_gl_LIBRARY} glfw3 imgui OpenMP::OpenMP_CXX)
+target_link_libraries(ImGuiVoronoiGen tinyfiledialogs ${OPENGL_gl_LIBRARY} glfw3 imgui OpenMP::OpenMP_CXX)
 
 include_directories(${OPENGL_INCLUDE_DIR})

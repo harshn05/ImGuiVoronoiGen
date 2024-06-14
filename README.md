@@ -12,6 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 - OpenGL
 - GLFW 
 - ImGui
+- Tinyfiledialogues
 
 ### Building
 
@@ -40,12 +41,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Usage
 
-Run the `ImGuiVoronoiGen` executable to start the application. Use the ImGui interface to adjust the parameters for the Voronoi diagram, and click the "Generate" button to generate a new diagram. 
+Run the `ImGuiVoronoiGen` executable to start the application. Use the ImGui interface to adjust the parameters for the Voronoi diagram, and click the "Generate" button to generate a new diagram. Save the current diagram to a file by clicking the "Save" button and entering the path where you want to save the image.
 
 ![screenshot](screenshot.PNG)
 
-## TODO
-Save the current diagram to a file by clicking the "Save" button and entering the path where you want to save the image.
+
+
 
 ## License
 

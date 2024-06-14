@@ -2,3 +2,6 @@
 build
 gccbuild
 stb_image_write.h
+glfw
+imgui
+stb*
