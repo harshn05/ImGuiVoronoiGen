@@ -1,6 +1,7 @@
 .vscode
 build
 gccbuild
+ninjabuild
 stb_image_write.h
 glfw
 imgui
