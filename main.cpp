@@ -16,6 +16,8 @@
 
 std::vector<unsigned char> currentImage;
 std::string savePath;
+std::vector<int> voronoiCellSizes;
+std::vector<int> voronoiCells;
 
 struct Point
 {
@@ -67,6 +69,9 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
         points.push_back({rand() % width, rand() % height, static_cast<unsigned char>(rand() % 256), static_cast<unsigned char>(rand() % 256), static_cast<unsigned char>(rand() % 256)});
     }
 
+    voronoiCellSizes.resize(numPoints, 0);
+    voronoiCells.resize(width * height, -1);
+ 
 #pragma omp parallel for
     for (int y = 0; y < height; ++y)
     {
@@ -74,17 +79,22 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
         {
             Point p{x, y};
             float minDist = std::numeric_limits<float>::max();
-            Point closestPoint;
+            int closestPointIndex = -1;
 
-            for (const Point &point : points)
+            for (int i = 0; i < numPoints; ++i)
             {
+                const Point &point = points[i];
                 float dist = std::pow(p.x - point.x, 2) + std::pow(p.y - point.y, 2);
                 if (dist < minDist)
                 {
                     minDist = dist;
-                    closestPoint = point;
+                    closestPointIndex = i;
                 }
             }
+
+            voronoiCells[y * width + x] = closestPointIndex;
+            voronoiCellSizes[closestPointIndex]++;
+            const Point &closestPoint = points[closestPointIndex];
 
             img[(y * width + x) * 3 + 0] = closestPoint.r;
             img[(y * width + x) * 3 + 1] = closestPoint.g;
@@ -227,6 +237,10 @@ int main()
                     unsigned char b = currentImage[(pixel_y * width + pixel_x) * 3 + 2];
 
                     ImGui::BeginTooltip();
+                    int cell = voronoiCells[pixel_y * width + pixel_x];
+                    int cellSize = voronoiCellSizes[cell];
+                    ImGui::Text("Cell id: %d", cell);
+                    ImGui::Text("Cell size: %d pixels", cellSize);
                     ImGui::Text("Pixel: (%d, %d)", pixel_x, pixel_y);
                     ImGui::Text("Color: (%d, %d, %d)", r, g, b);
                     ImGui::EndTooltip();
