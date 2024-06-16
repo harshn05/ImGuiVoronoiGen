@@ -130,7 +130,7 @@ int main()
     int height = 1000;
     int numPoints = 100;
     int seed = 0;
-    int styleIdx = 0;
+    int styleIdx = 1;
 
     GLuint my_image_texture = 0;
     // Main loop
