@@ -71,7 +71,7 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
 
     voronoiCellSizes.resize(numPoints, 0);
     voronoiCells.resize(width * height, -1);
- 
+
 #pragma omp parallel for
     for (int y = 0; y < height; ++y)
     {
@@ -131,6 +131,7 @@ int main()
     int numPoints = 100;
     int seed = 0;
     int styleIdx = 1;
+    bool randomSeed = true;
 
     GLuint my_image_texture = 0;
     // Main loop
@@ -142,7 +143,7 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        
+
         {
             ImGui::Begin("Input Parameters");
 
@@ -166,6 +167,13 @@ int main()
             ImGui::InputInt("Height", &height);
             ImGui::InputInt("Number of points", &numPoints);
             ImGui::InputInt("Seed", &seed);
+            if (ImGui::Checkbox("Random Seed", &randomSeed))
+            {
+                if (randomSeed)
+                {
+                    seed = rand();
+                }
+            }
 
             if (ImGui::Button("Generate"))
             {
@@ -173,6 +181,10 @@ int main()
                 // stbi_write_png("voronoi.png", width, height, 3, img.data(), width * 3);
                 // my_image_texture = LoadTextureFromFile("voronoi.png", width, height);
                 // my_image_texture = LoadTextureFromMemory(img, width, height);
+                if (randomSeed)
+                {
+                    seed = rand();
+                }
                 currentImage = generateVoronoiDiagram(width, height, numPoints, seed);
                 my_image_texture = LoadTextureFromMemory(currentImage, width, height);
             }
