@@ -57,7 +57,7 @@ GLuint LoadTextureFromFile(const char *filename, int &width, int &height)
     return texture;
 }
 
-std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int numPoints, int seed)
+std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int numPoints, int seed, bool grayscale)
 {
     srand(seed);
 
@@ -96,15 +96,26 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
             voronoiCellSizes[closestPointIndex]++;
             const Point &closestPoint = points[closestPointIndex];
 
-            img[(y * width + x) * 3 + 0] = closestPoint.r;
-            img[(y * width + x) * 3 + 1] = closestPoint.g;
-            img[(y * width + x) * 3 + 2] = closestPoint.b;
+            unsigned char r = closestPoint.r;
+            unsigned char g = closestPoint.g;
+            unsigned char b = closestPoint.b;
+
+            // converts the RGB color to grayscale using the formula 0.299*R + 0.587*G + 0.114*B, 
+            // which is a common method to convert color to grayscale.
+            if (grayscale)
+            {
+                unsigned char gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                r = g = b = gray;
+            }
+
+            img[(y * width + x) * 3 + 0] = r;
+            img[(y * width + x) * 3 + 1] = g;
+            img[(y * width + x) * 3 + 2] = b;
         }
     }
 
     return img;
 }
-
 int main()
 {
     // Setup window
@@ -132,6 +143,7 @@ int main()
     int seed = 0;
     int styleIdx = 1;
     bool randomSeed = true;
+    bool grayscale = false;
 
     GLuint my_image_texture = 0;
     // Main loop
@@ -174,18 +186,21 @@ int main()
                     seed = rand();
                 }
             }
+           
+            if (ImGui::Checkbox("Grayscale", &grayscale))
+            {
+              
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale);
+                my_image_texture = LoadTextureFromMemory(currentImage, width, height);
+            }
 
             if (ImGui::Button("Generate"))
             {
-                // std::vector<unsigned char> img = generateVoronoiDiagram(width, height, numPoints, seed);
-                // stbi_write_png("voronoi.png", width, height, 3, img.data(), width * 3);
-                // my_image_texture = LoadTextureFromFile("voronoi.png", width, height);
-                // my_image_texture = LoadTextureFromMemory(img, width, height);
                 if (randomSeed)
                 {
                     seed = rand();
                 }
-                currentImage = generateVoronoiDiagram(width, height, numPoints, seed);
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale);
                 my_image_texture = LoadTextureFromMemory(currentImage, width, height);
             }
 
