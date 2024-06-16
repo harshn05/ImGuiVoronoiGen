@@ -220,7 +220,7 @@ int main()
                 int pixel_x = static_cast<int>(mouse_pos_in_image.x * width);
                 int pixel_y = static_cast<int>(mouse_pos_in_image.y * height);
 
-                if (pixel_x >= 0 && pixel_x < width && pixel_y >= 0 && pixel_y < height)
+                if (pixel_x >= 0 && pixel_x < width && pixel_y >= 0 && pixel_y < height && (pixel_y * width + pixel_x) * 3 + 2 < currentImage.size())
                 {
                     unsigned char r = currentImage[(pixel_y * width + pixel_x) * 3 + 0];
                     unsigned char g = currentImage[(pixel_y * width + pixel_x) * 3 + 1];
