@@ -142,9 +142,9 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
+        
         {
-            ImGui::Begin("ImGuiVoronoiGen");
+            ImGui::Begin("Input Parameters");
 
             const char *styles[] = {"Classic", "Dark", "Light"};
             ImGui::Combo("Style", &styleIdx, styles, IM_ARRAYSIZE(styles));
@@ -200,7 +200,9 @@ int main()
                 ImGui::SetItemDefaultFocus();
                 ImGui::EndPopup();
             }
-
+            ImGui::End();
+            ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiCond_FirstUseEver);
+            ImGui::Begin("Voronoi Tessellation");
             ImVec2 available = ImGui::GetContentRegionAvail();
             float window_aspect = available.x / available.y;
             float image_aspect = (float)width / (float)height;
