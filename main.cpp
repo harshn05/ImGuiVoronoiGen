@@ -100,11 +100,14 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
             unsigned char g = closestPoint.g;
             unsigned char b = closestPoint.b;
 
-            // converts the RGB color to grayscale using the formula 0.299*R + 0.587*G + 0.114*B, 
-            // which is a common method to convert color to grayscale.
             if (grayscale)
             {
-                unsigned char gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                // converts the RGB color to grayscale using the formula 0.299*R + 0.587*G + 0.114*B,
+                // which is a common method to convert color to grayscale.
+                // unsigned char gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                // converts the RGB color to grayscale by normalizing the closest point index to the range [0, 255].
+                unsigned char gray = closestPointIndex * 255.0 / numPoints;
                 r = g = b = gray;
             }
 
@@ -186,10 +189,10 @@ int main()
                     seed = rand();
                 }
             }
-           
+
             if (ImGui::Checkbox("Grayscale", &grayscale))
             {
-              
+
                 currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale);
                 my_image_texture = LoadTextureFromMemory(currentImage, width, height);
             }
