@@ -57,7 +57,7 @@ GLuint LoadTextureFromFile(const char *filename, int &width, int &height)
     return texture;
 }
 
-std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int numPoints, int seed, bool grayscale)
+std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int numPoints, int seed, bool grayscale, bool drawBoundaries = true)
 {
     srand(seed);
 
@@ -117,6 +117,34 @@ std::vector<unsigned char> generateVoronoiDiagram(int width, int height, int num
         }
     }
 
+    if (drawBoundaries)
+    {
+
+        // Draw black boundaries between Voronoi cells
+        for (int y = 0; y < height; ++y)
+        {
+            for (int x = 0; x < width; ++x)
+            {
+                int dx[] = {-1, 0, 1, 0};
+                int dy[] = {0, 1, 0, -1};
+
+                for (int dir = 0; dir < 4; ++dir)
+                {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+
+                    if (nx < 0 || nx >= width || ny < 0 || ny >= height || voronoiCells[ny * width + nx] != voronoiCells[y * width + x])
+                    {
+                        img[(y * width + x) * 3 + 0] = 0;
+                        img[(y * width + x) * 3 + 1] = 0;
+                        img[(y * width + x) * 3 + 2] = 0;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     return img;
 }
 int main()
@@ -147,6 +175,7 @@ int main()
     int styleIdx = 1;
     bool randomSeed = true;
     bool grayscale = false;
+    bool drawBoundaries = true;
 
     GLuint my_image_texture = 0;
     // Main loop
@@ -190,10 +219,16 @@ int main()
                 }
             }
 
+            if (ImGui::Checkbox("Draw Boundaries", &drawBoundaries))
+            {
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale, drawBoundaries);
+                my_image_texture = LoadTextureFromMemory(currentImage, width, height);
+            }
+
             if (ImGui::Checkbox("Grayscale", &grayscale))
             {
 
-                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale);
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale, drawBoundaries);
                 my_image_texture = LoadTextureFromMemory(currentImage, width, height);
             }
 
@@ -203,7 +238,7 @@ int main()
                 {
                     seed = rand();
                 }
-                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale);
+                currentImage = generateVoronoiDiagram(width, height, numPoints, seed, grayscale, drawBoundaries);
                 my_image_texture = LoadTextureFromMemory(currentImage, width, height);
             }
 
