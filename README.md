@@ -1,6 +1,6 @@
 # ImGuiVoronoiGen
 
-ImGuiVoronoiGen is an interactive application for generating and visualizing Voronoi diagrams. It uses the ImGui library for the user interface, allowing users to adjust parameters and see the results in real time.
+ImGuiVoronoiGen is an interactive application for generating and visualizing Voronoi diagrams. It uses the ImGui library for the user interface, allowing users to adjust parameters and see the results in real time. To download the latest binaries for windows x64, go to the [releases](https://github.com/harshn05/ImGuiVoronoiGen/releases) section.
 
 ## Getting Started
 
