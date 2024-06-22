@@ -3,8 +3,8 @@
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 #include <vector>
-#include <cstdlib>
-#include <cmath>
+#include <stdlib.h>
+#include <math.h>
 #include <limits>
 #include <omp.h>
 #include <string>
