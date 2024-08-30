@@ -33,6 +33,11 @@ These instructions will get you a copy of the project up and running on your loc
    ```
    cmake -DCMAKE_BUILD_TYPE=Release ..
    ```
+   Note: for Linux (Ubuntu) install the pre-requisite libs:
+   ```
+   sudo apt install  libwayland-dev libwayland-bin libxkbcommon-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+   ```
+
 5. Build the project:
    ```
    cmake --build .
